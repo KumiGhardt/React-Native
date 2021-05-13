@@ -5,15 +5,18 @@ import {
   Text,
   TextInput,
   Button,
-  Image,
   ImageBackground,
-  TouchableOpacity,
 } from "react-native";
+import { TouchableOpacity } from "react-native-gesture-handler";
+
 
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { name: "", color: "" };
+    this.state = {
+      userName: " ",
+      backgroundColor: " ",
+    };
   }
 
   render() {
@@ -27,24 +30,42 @@ export default class Home extends React.Component {
         <View style={styles.view}>
           <TextInput
             style={styles.textInput}
-            onChangeText={(name) => this.setState({ name })}
-            value={this.state.name}
+            onChangeText={(userName) => this.setState({ userName })}
+            value={this.state.userName}
             placeholder="Your name..."
           />
-          <Text>Choose background Colour</Text>
+          <Text>Choose a background colour</Text>
           <View style={styles.chatBackgroundColour}>
-            <TouchableOpacity style={styles.chatBackgroundColour1} onPress={(color) => this.setState({ color })}/>
-            <TouchableOpacity style={styles.chatBackgroundColour2} onPress={(color) => this.setState({ color })}/>
-            <TouchableOpacity style={styles.chatBackgroundColour3} onPress={(color) => this.setState({ color })}/>
-            <TouchableOpacity style={styles.chatBackgroundColour5} onPress={(color) => this.setState({ color })}/>
+            <TouchableOpacity
+              style={styles.chatBackgroundColour1}
+              onPress={(color) => this.setState({ backgroundColor: "#090C08" })}
+            />
+            <TouchableOpacity
+              style={styles.chatBackgroundColour2}
+              onPress={(color) => this.setState({ backgroundColor: "#474056" })}
+            />
+            <TouchableOpacity
+              style={styles.chatBackgroundColour3}
+              onPress={(color) => this.setState({ backgroundColor: "#8A95A5" })}
+            />
+            <TouchableOpacity
+              style={styles.chatBackgroundColour4}
+              onPress={(color) => this.setState({ backgroundColor: "#474056" })}
+            />
           </View>
-        <View style={styles.chatButton}>
-          <Button color="#fff"
-            title="Start Chat"
-            onPress={() =>
-              this.props.navigation.navigate("Chat", { name: this.state.name, backgroundColor: this.state.color })
-            }
-          />
+
+          {/* navigate to chat screen */}
+          <View style={styles.chatButton}>
+            <Button
+              color="#fff"
+              title="Start Chat"
+              onPress={() =>
+                this.props.navigation.navigate("Chat", {
+                  userName: this.state.userName,
+                  backgroundColor: this.state.backgroundColor,
+                })
+              }
+            />
           </View>
         </View>
       </ImageBackground>
@@ -68,13 +89,12 @@ const styles = StyleSheet.create({
   },
 
   view: {
-   
     alignItems: "center",
     backgroundColor: "#fff",
     borderWidth: 2,
     borderRadius: 3,
-    width: '88%',
-    height: '44%',
+    width: "88%",
+    height: "44%",
     opacity: 0.88,
     paddingTop: 20,
     marginBottom: 30,
@@ -94,12 +114,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
- 
-
   chatBackgroundColour: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginBottom: 30,    
+    marginBottom: 30,
   },
 
   chatBackgroundColour1: {
@@ -124,7 +142,7 @@ const styles = StyleSheet.create({
     borderRadius: 50 / 2,
   },
 
-  chatBackgroundColour5: {
+  chatBackgroundColour4: {
     backgroundColor: "#B9C6AE",
     width: 50,
     height: 50,
@@ -132,13 +150,12 @@ const styles = StyleSheet.create({
   },
 
   chatButton: {
-    color: 'white',
-    fontWeight: '600',
+    fontWeight: "600",
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
     marginTop: 10,
-    backgroundColor: '#757083',
-    width: '60%',
+    backgroundColor: "#757083",
+    width: "60%",
     padding: 10,
     borderRadius: 10,
   },
