@@ -32,7 +32,7 @@ export default class Home extends React.Component {
             style={styles.textInput}
             onChangeText={(userName) => this.setState({ userName })}
             value={this.state.userName}
-            placeholder="Your name..."
+            placeholder="Username..."
           />
           <Text>Choose a background colour</Text>
           <View style={styles.chatBackgroundColour}>
@@ -57,7 +57,7 @@ export default class Home extends React.Component {
           {/* navigate to chat screen */}
           <View style={styles.chatButton}>
             <Button
-              color="#fff"
+              color="#757083"
               title="Start Chat"
               onPress={() =>
                 this.props.navigation.navigate("Chat", {
@@ -123,40 +123,45 @@ const styles = StyleSheet.create({
   chatBackgroundColour1: {
     backgroundColor: "#090C08",
     width: 50,
+    width: 50,
     height: 50,
-    borderRadius: 50 / 2,
+    borderRadius: 25,
+    margin: 10
   },
 
   chatBackgroundColour2: {
     backgroundColor: "#474056",
     width: 50,
+    width: 50,
     height: 50,
-    borderRadius: 50 / 2,
-    justifyContent: "space-around",
+    borderRadius: 25,
+    margin: 10
   },
 
   chatBackgroundColour3: {
     backgroundColor: "#8A95A5",
     width: 50,
+    width: 50,
     height: 50,
-    borderRadius: 50 / 2,
+    borderRadius: 25,
+    margin: 10
   },
 
   chatBackgroundColour4: {
     backgroundColor: "#B9C6AE",
     width: 50,
+    width: 50,
     height: 50,
-    borderRadius: 50 / 2,
+    borderRadius: 25,
+    margin: 10
   },
 
   chatButton: {
     fontWeight: "600",
     fontSize: 16,
     textAlign: "center",
-    marginTop: 10,
-    backgroundColor: "#757083",
+    //marginTop: 10,
     width: "60%",
-    padding: 10,
     borderRadius: 10,
   },
 });
