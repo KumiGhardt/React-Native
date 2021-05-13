@@ -9,7 +9,6 @@ import {
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-
 export default class Home extends React.Component {
   constructor(props) {
     super(props);
@@ -32,7 +31,7 @@ export default class Home extends React.Component {
             style={styles.textInput}
             onChangeText={(userName) => this.setState({ userName })}
             value={this.state.userName}
-            placeholder="Username..."
+            placeHolder="Username..."
           />
           <Text>Choose a background colour</Text>
           <View style={styles.chatBackgroundColour}>
@@ -50,7 +49,7 @@ export default class Home extends React.Component {
             />
             <TouchableOpacity
               style={styles.chatBackgroundColour4}
-              onPress={(color) => this.setState({ backgroundColor: "#474056" })}
+              onPress={(color) => this.setState({ backgroundColor: "#B9C6AE" })}
             />
           </View>
 
@@ -126,7 +125,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    margin: 10
+    margin: 10,
   },
 
   chatBackgroundColour2: {
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    margin: 10
+    margin: 10,
   },
 
   chatBackgroundColour3: {
@@ -144,7 +143,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    margin: 10
+    margin: 10,
   },
 
   chatBackgroundColour4: {
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
     width: 50,
     height: 50,
     borderRadius: 25,
-    margin: 10
+    margin: 10,
   },
 
   chatButton: {
