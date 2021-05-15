@@ -31,7 +31,7 @@ export default class Home extends React.Component {
             style={styles.textInput}
             onChangeText={(userName) => this.setState({ userName })}
             value={this.state.userName}
-            placeHolder="Username..."
+            placeholder="add username"
           />
           <Text>Choose a background colour</Text>
           <View style={styles.chatBackgroundColour}>
@@ -56,6 +56,10 @@ export default class Home extends React.Component {
           {/* navigate to chat screen */}
           <View style={styles.chatButton}>
             <Button
+              accessible={true}
+              accessibilityLabel="More options"
+              accessibilityHint="Lets you choose to send an image or your geolocation."
+              accessibilityRole="button"
               color="#757083"
               title="Start Chat"
               onPress={() =>

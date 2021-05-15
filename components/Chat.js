@@ -18,11 +18,14 @@ export default class Chat extends React.Component {
   }
 
   componentDidMount() {
+//access the user’s name
+let userName = this.props.route.params.userName;
+
     this.setState({
       messages: [
         {
           _id: 1,
-          text: "Hello developer",
+          text: `Hey ${userName}!`,
           createdAt: new Date(),
           user: {
             _id: 2,
@@ -32,11 +35,12 @@ export default class Chat extends React.Component {
         },
         {
           _id: 2,
-          text: "This is a system message",
+          text: `${userName} has entered the chat`,
           createdAt: new Date(),
           system: true,
         },
       ],
+
     });
   }
 
@@ -53,8 +57,9 @@ export default class Chat extends React.Component {
       <Bubble
         {...props}
         wrapperStyle={{
+         
           right: {
-            backgroundColor: '#000'
+            backgroundColor: 'purple'
           }
         }}
       />
