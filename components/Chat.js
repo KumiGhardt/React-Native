@@ -21,6 +21,7 @@ export default class Chat extends React.Component {
 //access the user’s name
 let userName = this.props.route.params.userName;
 
+
     this.setState({
       messages: [
         {
@@ -55,11 +56,12 @@ let userName = this.props.route.params.userName;
   renderBubble(props) {
     return (
       <Bubble
+
         {...props}
         wrapperStyle={{
          
           right: {
-            backgroundColor: 'purple'
+            backgroundColor: 'black'
           }
         }}
       />
@@ -69,11 +71,11 @@ let userName = this.props.route.params.userName;
   render() {
     //access the user’s name
     let userName = this.props.route.params.userName;
-    //access the background colour selected
-    let backgroundColor = this.props.route.params.backgroundColor;
-
+  //access the background colour selected
+let backgroundColor = this.props.route.params.backgroundColor;
+    
     return (
-      <View style={{ flex: 1 }}>
+      <View style={{ flex: 1, backgroundColor: backgroundColor }}>
         <GiftedChat
         renderBubble={this.renderBubble.bind(this)}
           messages={this.state.messages}
