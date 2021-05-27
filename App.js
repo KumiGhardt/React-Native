@@ -15,6 +15,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 
 
+
 // Create the navigator
 const Stack = createStackNavigator();
 
@@ -29,6 +30,8 @@ export default class App extends React.Component {
   alertMyText(input = []) {
     Alert.alert(input.text);
   }
+
+
 
   render() {
     return (
