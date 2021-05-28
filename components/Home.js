@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
+
 export default class Home extends React.Component {
   constructor(props) {
     super(props);

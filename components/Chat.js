@@ -11,6 +11,17 @@ import { GiftedChat, Bubble } from "react-native-gifted-chat";
 const firebase = require("firebase");
 require("firebase/firestore");
 
+//config to allow the app to connect to Firestore.
+const firebaseConfig = {
+  apiKey: "AIzaSyC5jKux9BuUbl5tuk39VV_VPv6HfPzV2hg",
+  authDomain: "test-c44e1.firebaseapp.com",
+  projectId: "test-c44e1",
+  storageBucket: "test-c44e1.appspot.com",
+  messagingSenderId: "834084879540",
+  appId: "1:834084879540:web:e61466bb1a840e6cea2be1",
+  measurementId: "G-LBRC9XB436",
+};
+
 // The application’s main Chat component that renders the chat UI
 export default class Chat extends React.Component {
   constructor() {
@@ -18,23 +29,12 @@ export default class Chat extends React.Component {
     this.state = {
       messages: [],
     };
-    //config to allow the app to connect to Firestore.
-    const firebaseConfig = {
-      apiKey: "AIzaSyC5jKux9BuUbl5tuk39VV_VPv6HfPzV2hg",
-      authDomain: "test-c44e1.firebaseapp.com",
-      projectId: "test-c44e1",
-      storageBucket: "test-c44e1.appspot.com",
-      messagingSenderId: "834084879540",
-      appId: "1:834084879540:web:e61466bb1a840e6cea2be1",
-      measurementId: "G-LBRC9XB436"
-    };
-
+    //connect to firebase
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-
-    // //reference to Firestore collection
-    // this.referenceChatMessages = firebase.firestore().collection("TalkTime");
+    //reference the collection in firebase
+    this.referenceChatMessages = firebase.firestore().collection("ChatApp");
   }
 
   //fetch and display existing messages
@@ -44,15 +44,13 @@ export default class Chat extends React.Component {
       if (!user) {
         firebase.auth().signInAnonymously();
       }
+    
       this.setState({
         uid: user.uid,
         messages: [],
       });
       // create a reference to the active user's documents
-      this.referenceChatMessages = firebase
-        .firestore()
-        .collection("messages")
-        .where("uid", "==", this.state.uid);
+      this.referenceChatMessages = firebase.firestore().collection("ChatApp");
       // listen for collection changes for current user
       this.unsubscribeMessages = this.referenceChatMessages.onSnapshot(
         this.onCollectionUpdate
@@ -108,29 +106,33 @@ export default class Chat extends React.Component {
 
   // Adds messages to cloud storage
   addMessages = () => {
+
     const messages = this.state.messages[0];
-    this.referenceChatMessages.add({
-      text: messages.text || null,
-      createdAt: messages.createdAt,
-      system: false,
-      image: messages.image || null,
-      location: messages.location || null,
-      user: {
-        _id: messages.user._id,
-        name: messages.user.name,
-        avatar: messages.user.avatar,
-      },
-    })
+    firebase
+      .firestore()
+      .collection("ChatApp")
+      .add({
+        text: messages.text,
+        createdAt: messages.createdAt,
+        user: {
+          _id: messages.user._id,
+          name: messages.user.name,
+        },
+      }).then(this.saveMessages).catch((error) => console.log('error', error));
+      
   };
 
-   // saves new message to client-side storage
-   saveMessages = async () => {
+  // saves new message to client-side storage
+  saveMessages = async () => {
     try {
-        await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+      await AsyncStorage.setItem(
+        "messages",
+        JSON.stringify(this.state.messages)
+      );
     } catch (error) {
-        console.log(error.message);
+      console.log(error.message);
     }
-}
+  };
 
   //Event handler for sending messages
   onSend(messages = []) {
@@ -138,7 +140,10 @@ export default class Chat extends React.Component {
       (previousState) => ({
         messages: GiftedChat.append(previousState.messages, messages),
       }),
-      this.addMessage
+      () => {
+        this.addMessages();
+        this.saveMessages();
+    }
     );
   }
 
@@ -175,6 +180,7 @@ export default class Chat extends React.Component {
           onSend={(messages) => this.onSend(messages)}
           user={{
             _id: 1,
+            name: userName,
           }}
         />
         {Platform.OS === "android" ? (
