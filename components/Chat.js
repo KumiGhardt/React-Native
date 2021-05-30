@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { AsyncStorage } from 'react-native';
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -106,7 +107,6 @@ export default class Chat extends React.Component {
 
   // Adds messages to cloud storage
   addMessages = () => {
-
     const messages = this.state.messages[0];
     firebase
       .firestore()
@@ -129,6 +129,18 @@ export default class Chat extends React.Component {
         "messages",
         JSON.stringify(this.state.messages)
       );
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  //fetching data
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = await AsyncStorage.getItem('messages') || [];
+      this.setState({
+        messages: JSON.parse(messages)
+      });
     } catch (error) {
       console.log(error.message);
     }
