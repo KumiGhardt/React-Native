@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import { AsyncStorage } from 'react-native';
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -123,28 +122,38 @@ export default class Chat extends React.Component {
   };
 
   // saves new message to client-side storage
-  saveMessages = async () => {
+  async saveMessages() {
     try {
-      await AsyncStorage.setItem(
-        "messages",
-        JSON.stringify(this.state.messages)
-      );
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
     } catch (error) {
       console.log(error.message);
     }
-  };
-  //fetching data
-  async getMessages() {
-    let messages = '';
-    try {
-      messages = await AsyncStorage.getItem('messages') || [];
-      this.setState({
-        messages: JSON.parse(messages)
-      });
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  }
+
+  // //fetching data
+  // async getMessages() {
+  //   let messages = '';
+  //   try {
+  //     messages = await AsyncStorage.getItem('messages') || [];
+  //     this.setState({
+  //       messages: JSON.parse(messages)
+  //     });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
+  // //delete messsages
+  // async deleteMessages() {
+  //   try {
+  //     await AsyncStorage.removeItem('messages');
+  //     this.setState({
+  //       messages: []
+  //     })
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // }
 
   //Event handler for sending messages
   onSend(messages = []) {
