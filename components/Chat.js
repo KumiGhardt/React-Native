@@ -7,7 +7,6 @@ import {
   KeyboardAvoidingView,
 } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
-import { AsyncStorage } from 'react-native';
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -45,7 +44,7 @@ export default class Chat extends React.Component {
       if (!user) {
         firebase.auth().signInAnonymously();
       }
-    
+
       this.setState({
         uid: user.uid,
         messages: [],
@@ -53,9 +52,9 @@ export default class Chat extends React.Component {
       // create a reference to the active user's documents
       this.referenceChatMessages = firebase.firestore().collection("ChatApp");
       // listen for collection changes for current user
-      this.unsubscribeMessages = this.referenceChatMessages.onSnapshot(
-        this.onCollectionUpdate
-      );
+      this.unsubscribeMessages = this.referenceChatMessages
+        .orderBy("createdAt", "desc")
+        .onSnapshot(this.onCollectionUpdate);
     });
   }
 
@@ -75,7 +74,7 @@ export default class Chat extends React.Component {
       messages.push({
         _id: data._id,
         text: data.text,
-        createdAt: data.createdAt.toDate(),
+        createdAt: new Date(),
         user: data.user,
       });
     });
@@ -96,14 +95,16 @@ export default class Chat extends React.Component {
       .firestore()
       .collection("ChatApp")
       .add({
+        _id: messages._id,
         text: messages.text,
         createdAt: messages.createdAt,
         user: {
           _id: messages.user._id,
           name: messages.user.name,
         },
-      }).then().catch((error) => console.log('error', error));
-      
+      })
+      .then()
+      .catch((error) => console.log("error", error));
   };
 
   //Event handler for sending messages
@@ -114,7 +115,7 @@ export default class Chat extends React.Component {
       }),
       () => {
         this.addMessages();
-    }
+      }
     );
   }
 
