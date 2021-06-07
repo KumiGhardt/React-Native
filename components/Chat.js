@@ -28,6 +28,11 @@ export default class Chat extends React.Component {
     super();
     this.state = {
       messages: [],
+      user: {
+        _id: '',
+        name: '',
+        avatar: null
+      }
     };
     //connect to firebase
     if (!firebase.apps.length) {
@@ -44,17 +49,16 @@ export default class Chat extends React.Component {
       if (!user) {
         firebase.auth().signInAnonymously();
       }
-    
-      this.setState({
-        uid: user.uid,
-        messages: [],
-      });
+
+      // this.setState({
+      //   messages: [],
+      // });
       // create a reference to the active user's documents
       this.referenceChatMessages = firebase.firestore().collection("ChatApp");
       // listen for collection changes for current user
-      this.unsubscribeMessages = this.referenceChatMessages.onSnapshot(
-        this.onCollectionUpdate
-      );
+      this.unsubscribeMessages = this.referenceChatMessages
+        .orderBy("createdAt", "desc")
+        .onSnapshot(this.onCollectionUpdate);
     });
   }
 
@@ -74,33 +78,16 @@ export default class Chat extends React.Component {
       messages.push({
         _id: data._id,
         text: data.text,
-        createdAt: data.createdAt.toDate(),
+        createdAt: new Date(),
         user: data.user,
       });
     });
 
     //access the user’s name
     const userName = this.props.route.params.userName;
-
+    this.props.navigation.setOptions({ title: `${userName}'s Chatroom` });
     this.setState({
-      messages: [
-        {
-          _id: 1,
-          text: `Hey ${userName}!`,
-          createdAt: new Date(),
-          user: {
-            _id: 2,
-            name: "React Native",
-            avatar: "https://placeimg.com/140/140/any",
-          },
-        },
-        {
-          _id: 2,
-          text: `${userName} has entered the chat`,
-          createdAt: new Date(),
-          system: true,
-        },
-      ],
+      messages,
     });
   };
 
@@ -111,6 +98,7 @@ export default class Chat extends React.Component {
       .firestore()
       .collection("ChatApp")
       .add({
+        _id: messages._id,
         text: messages.text,
         createdAt: messages.createdAt,
         user: {
@@ -163,8 +151,7 @@ export default class Chat extends React.Component {
       }),
       () => {
         this.addMessages();
-        this.saveMessages();
-    }
+      }
     );
   }
 
@@ -197,6 +184,7 @@ export default class Chat extends React.Component {
       >
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
+          renderUsernameOnMessage={true}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           user={{
