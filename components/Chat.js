@@ -28,6 +28,11 @@ export default class Chat extends React.Component {
     super();
     this.state = {
       messages: [],
+      user: {
+        _id: '',
+        name: '',
+        avatar: null
+      }
     };
     //connect to firebase
     if (!firebase.apps.length) {
@@ -45,10 +50,9 @@ export default class Chat extends React.Component {
         firebase.auth().signInAnonymously();
       }
 
-      this.setState({
-        uid: user.uid,
-        messages: [],
-      });
+      // this.setState({
+      //   messages: [],
+      // });
       // create a reference to the active user's documents
       this.referenceChatMessages = firebase.firestore().collection("ChatApp");
       // listen for collection changes for current user
@@ -82,7 +86,6 @@ export default class Chat extends React.Component {
     //access the user’s name
     const userName = this.props.route.params.userName;
     this.props.navigation.setOptions({ title: `${userName}'s Chatroom` });
-
     this.setState({
       messages,
     });
@@ -148,6 +151,7 @@ export default class Chat extends React.Component {
       >
         <GiftedChat
           renderBubble={this.renderBubble.bind(this)}
+          renderUsernameOnMessage={true}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
           user={{
