@@ -6,7 +6,9 @@ import {
   Platform,
   KeyboardAvoidingView,
 } from "react-native";
-import { GiftedChat, Bubble } from "react-native-gifted-chat";
+import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -28,33 +30,102 @@ export default class Chat extends React.Component {
     super();
     this.state = {
       messages: [],
+      _id: 0,
       user: {
-        _id: '',
-        name: '',
-        avatar: null
-      }
+        _id: "",
+        name: "System",
+        avatar: null,
+      },
     };
     //connect to firebase
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
+   
+
     //reference the collection in firebase
-    this.referenceChatMessages = firebase.firestore().collection("ChatApp");
+    this.referenceChatMessages = firebase.firestore().collection("messages");
   }
+
+   // Adds messages to cloud storage
+   addMessages = () => {
+    const messages = this.state.messages[0];
+    firebase
+      .firestore()
+      .collection("messages")
+      .add({
+        _id: messages._id,
+        text: messages.text,
+        createdAt: messages.createdAt,
+        user: {
+          _id: messages.user._id,
+          name: messages.user.name,
+        },
+      })
+      .then(this.saveMessages)
+      .catch((error) => console.log("error", error));
+  };
+
+//retrieve chat messages from asyncStorage instead of filling your message state with static data
+  async getMessages() {
+    let messages = '';
+    try {
+      messages = await AsyncStorage.getItem('messages') || [];
+      this.setState({
+        messages: JSON.parse(messages)
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+  
+  //To save messages, you’re using the setItem method that takes two parameters: a key and a value.
+  async saveMessages() {
+    let messages = '';
+    try {
+      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  //delete messages
+  async deleteMessages() {
+    try {
+      await AsyncStorage.removeItem('messages');
+      this.setState({
+        messages: []
+      })
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
 
   //fetch and display existing messages
   componentDidMount() {
+
+    //find out the users connection status
+    NetInfo.fetch().then(connection => {
+      if (connection.isConnected) {
+        console.log('online');
+      } else {
+        console.log('offline');
+      }
+    });
+
     // authenticate the user
     this.authUnsubscribe = firebase.auth().onAuthStateChanged((user) => {
       if (!user) {
         firebase.auth().signInAnonymously();
       }
-
-      // this.setState({
-      //   messages: [],
-      // });
       // create a reference to the active user's documents
-      this.referenceChatMessages = firebase.firestore().collection("ChatApp");
+      this.referenceChatMessages = firebase.firestore().collection("messages");
+
+      //call a getMessages function that loads the messages from asyncStorage:
+      this.getMessages();
+
+
       // listen for collection changes for current user
       this.unsubscribeMessages = this.referenceChatMessages
         .orderBy("createdAt", "desc")
@@ -91,57 +162,6 @@ export default class Chat extends React.Component {
     });
   };
 
-  // Adds messages to cloud storage
-  addMessages = () => {
-    const messages = this.state.messages[0];
-    firebase
-      .firestore()
-      .collection("ChatApp")
-      .add({
-        _id: messages._id,
-        text: messages.text,
-        createdAt: messages.createdAt,
-        user: {
-          _id: messages.user._id,
-          name: messages.user.name,
-        },
-      }).then(this.saveMessages).catch((error) => console.log('error', error));
-      
-  };
-
-  // saves new message to client-side storage
-  async saveMessages() {
-    try {
-      await AsyncStorage.setItem('messages', JSON.stringify(this.state.messages));
-    } catch (error) {
-      console.log(error.message);
-    }
-  }
-
-  // //fetching data
-  // async getMessages() {
-  //   let messages = '';
-  //   try {
-  //     messages = await AsyncStorage.getItem('messages') || [];
-  //     this.setState({
-  //       messages: JSON.parse(messages)
-  //     });
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
-
-  // //delete messsages
-  // async deleteMessages() {
-  //   try {
-  //     await AsyncStorage.removeItem('messages');
-  //     this.setState({
-  //       messages: []
-  //     })
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // }
 
   //Event handler for sending messages
   onSend(messages = []) {
@@ -150,9 +170,21 @@ export default class Chat extends React.Component {
         messages: GiftedChat.append(previousState.messages, messages),
       }),
       () => {
+        //a callback function to setState so that once the state object is updated, you’ll save its current state into asyncStorage by calling your custom function addMessages()
         this.addMessages();
       }
     );
+  }
+
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return(
+        <InputToolbar
+        {...props}
+        />
+      );
+    }
   }
 
   //change bubble color
@@ -161,6 +193,9 @@ export default class Chat extends React.Component {
       <Bubble
         {...props}
         wrapperStyle={{
+          left:{
+            backgroundColor: "green"
+          },
           right: {
             backgroundColor: "black",
           },
@@ -183,6 +218,8 @@ export default class Chat extends React.Component {
         }}
       >
         <GiftedChat
+          isConnected={this.state.isConnected}
+          renderInputToolbar={this.renderInputToolbar}
           renderBubble={this.renderBubble.bind(this)}
           renderUsernameOnMessage={true}
           messages={this.state.messages}
