@@ -71,11 +71,10 @@ export default class Chat extends React.Component {
             }
             this.setState({
               messages: [],
-              _id: 0,
               user: {
                 _id: "",
                 name: "",
-                avatar: "",
+                avatar: null,
               },
               isConnected: false,
             });
