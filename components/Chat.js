@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
   View,
   Text,
@@ -30,7 +30,7 @@ export default class Chat extends React.Component {
     super(props);
     this.state = {
       messages: [],
-      _id: 1,
+      _id: 0,
       user: {
         _id: "",
         name: "",
@@ -43,8 +43,7 @@ export default class Chat extends React.Component {
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-    //reference the collection in firebase
-    this.referenceChatMessages = firebase.firestore().collection("messages");
+
   }
 
   //fetch and display existing messages
@@ -54,6 +53,11 @@ export default class Chat extends React.Component {
     this.props.navigation.setOptions({
       title: `${userName}'s Chatroom`,
     });
+     //reference the collection in firebase
+     this.referenceChatMessages = firebase.firestore().collection("messages");
+
+     //get messages
+     this.getMessages();
 
     //find out the users connection status
     NetInfo.fetch().then((connection) => {
@@ -76,7 +80,7 @@ export default class Chat extends React.Component {
                 name: "",
                 avatar: null,
               },
-              isConnected: false,
+              isConnected: true,
             });
             // listen for collection changes for current user
             this.unsubscribe = this.referenceChatMessages
@@ -88,12 +92,12 @@ export default class Chat extends React.Component {
         this.setState({
           isConnected: false,
         });
-        this.saveMessages();
       }
     });
   }
   componentWillUnmount() {
     this.unsubscribe();
+    this.authUnsubscribe();
   }
 
   //retrieve chat messages from asyncStorage instead of filling your message state with static data
@@ -115,7 +119,6 @@ export default class Chat extends React.Component {
     console.log(message);
     this.referenceChatMessages.add({
       _id: message._id,
-      _id: this.state._id,
       createdAt: message.createdAt,
       text: message.text || null,
       user: message.user,
@@ -201,12 +204,12 @@ export default class Chat extends React.Component {
     );
   }
 
-  // renderInputToolbar(props) {
-  //   if (this.state.isConnected == false) {
-  //   } else {
-  //     return <InputToolbar {...props} />;
-  //   }
-  // }
+  renderInputToolbar(props) {
+    if (this.state.isConnected == false) {
+    } else {
+      return <InputToolbar {...props} />;
+    }
+  }
 
   render() {
     //access the user’s name
@@ -223,7 +226,7 @@ export default class Chat extends React.Component {
       >
         <GiftedChat
           isConnected={this.state.isConnected}
-          renderInputToolbar={this.renderInputToolbar}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderBubble={this.renderBubble.bind(this)}
           renderUsernameOnMessage={true}
           messages={this.state.messages}
