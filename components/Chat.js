@@ -88,10 +88,9 @@ export default class Chat extends React.Component {
               .onSnapshot(this.onCollectionUpdate);
           });
       } else {
-        console.log("offline");
-        this.setState({
-          isConnected: false,
-        });
+        console.log('offline');
+        this.setState({ isConnected: false });
+        this.getMessages();
       }
     });
   }
@@ -157,8 +156,11 @@ export default class Chat extends React.Component {
         JSON.stringify(messages)
       );
     } catch (error) {
-      console.log(error.message);
+      console.log(error.messages);
     }
+    finally {
+      console.log('saved in clientside');
+   }
   }
 
   //Event handler for sending messages
@@ -225,15 +227,12 @@ export default class Chat extends React.Component {
         }}
       >
         <GiftedChat
-          isConnected={this.state.isConnected}
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderBubble={this.renderBubble.bind(this)}
           renderUsernameOnMessage={true}
           messages={this.state.messages}
           onSend={(messages) => this.onSend(messages)}
-          user={{
-            _id: 1,
-          }}
+          user={this.state.user}
           alwaysShowSend
         />
         {Platform.OS === "android" ? (
