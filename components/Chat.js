@@ -154,7 +154,7 @@ export default class Chat extends React.Component {
     try {
       await AsyncStorage.setItem(
         "messages",
-        JSON.stringify(this.state.message)
+        JSON.stringify(messages)
       );
     } catch (error) {
       console.log(error.message);
