@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Component } from "react";
 import {
   View,
   Text,
@@ -9,6 +9,8 @@ import {
 import { GiftedChat, Bubble, InputToolbar } from "react-native-gifted-chat";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import MapView from "react-native-maps";
+import CustomActions from "./CustomActions";
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -21,7 +23,7 @@ var firebaseConfig = {
   storageBucket: "chatapp-88bc8.appspot.com",
   messagingSenderId: "1020519519236",
   appId: "1:1020519519236:web:f0b85abfaacc956ea01151",
-  measurementId: "G-614GWNY3Y8"
+  measurementId: "G-614GWNY3Y8",
 };
 
 // The application’s main Chat component that renders the chat UI
@@ -37,13 +39,14 @@ export default class Chat extends React.Component {
         avatar: "",
       },
       isConnected: false,
+      image: null,
+      location: null,
     };
 
     //connect to firebase
     if (!firebase.apps.length) {
       firebase.initializeApp(firebaseConfig);
     }
-
   }
 
   //fetch and display existing messages
@@ -53,11 +56,11 @@ export default class Chat extends React.Component {
     this.props.navigation.setOptions({
       title: `${userName}'s Chatroom`,
     });
-     //reference the collection in firebase
-     this.referenceChatMessages = firebase.firestore().collection("messages");
+    //reference the collection in firebase
+    this.referenceChatMessages = firebase.firestore().collection("messages");
 
-     //get messages
-     this.getMessages();
+    //get messages
+    this.getMessages();
 
     //find out the users connection status
     NetInfo.fetch().then((connection) => {
@@ -88,7 +91,7 @@ export default class Chat extends React.Component {
               .onSnapshot(this.onCollectionUpdate);
           });
       } else {
-        console.log('offline');
+        console.log("offline");
         this.setState({ isConnected: false });
         this.getMessages();
       }
@@ -157,10 +160,9 @@ export default class Chat extends React.Component {
       );
     } catch (error) {
       console.log(error.messages);
+    } finally {
+      console.log("saved in clientside");
     }
-    finally {
-      console.log('saved in clientside');
-   }
   }
 
   //Event handler for sending messages
@@ -206,11 +208,41 @@ export default class Chat extends React.Component {
     );
   }
 
+  //makes the toolbar disappear when one is offline
   renderInputToolbar(props) {
     if (this.state.isConnected == false) {
     } else {
       return <InputToolbar {...props} />;
     }
+  }
+
+  //creates the circle button
+  renderCustomActions = (props) => {
+    return <CustomActions {...props} />;
+  };
+
+  //creates a map should the cst have a location on
+  renderCustomView(props) {
+    const { currentMessage } = props;
+    if (currentMessage.location) {
+      return (
+        <MapView
+          style={{
+            width: 150,
+            height: 100,
+            borderRadius: 13,
+            margin: 3,
+          }}
+          region={{
+            latitude: Number(currentMessage.location.latitude),
+            longitude: Number(currentMessage.location.longitude),
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+        />
+      );
+    }
+    return null;
   }
 
   render() {
@@ -227,14 +259,15 @@ export default class Chat extends React.Component {
         }}
       >
         <GiftedChat
-          renderInputToolbar={this.renderInputToolbar.bind(this)}
           renderBubble={this.renderBubble.bind(this)}
-          renderUsernameOnMessage={true}
-          messages={this.state.messages}
+          renderInputToolbar={this.renderInputToolbar.bind(this)}
+          messages={messages}
+          renderCustomView={this.renderCustomView}
+          renderActions={this.renderCustomActions}
           onSend={(messages) => this.onSend(messages)}
-          user={this.state.user}
-          alwaysShowSend
+          user={user}
         />
+        {/* Android keyboard fix */}
         {Platform.OS === "android" ? (
           <KeyboardAvoidingView behavior="height" />
         ) : null}
