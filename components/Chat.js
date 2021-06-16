@@ -14,14 +14,14 @@ const firebase = require("firebase");
 require("firebase/firestore");
 
 //config to allow the app to connect to Firestore.
-const firebaseConfig = {
-  apiKey: "AIzaSyC5jKux9BuUbl5tuk39VV_VPv6HfPzV2hg",
-  authDomain: "test-c44e1.firebaseapp.com",
-  projectId: "test-c44e1",
-  storageBucket: "test-c44e1.appspot.com",
-  messagingSenderId: "834084879540",
-  appId: "1:834084879540:web:e61466bb1a840e6cea2be1",
-  measurementId: "G-LBRC9XB436",
+var firebaseConfig = {
+  apiKey: "AIzaSyDHR4e2Z2iPkulanThPQIn5hwI8Dtn80cY",
+  authDomain: "chatapp-88bc8.firebaseapp.com",
+  projectId: "chatapp-88bc8",
+  storageBucket: "chatapp-88bc8.appspot.com",
+  messagingSenderId: "1020519519236",
+  appId: "1:1020519519236:web:f0b85abfaacc956ea01151",
+  measurementId: "G-614GWNY3Y8"
 };
 
 // The application’s main Chat component that renders the chat UI
