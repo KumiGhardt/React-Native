@@ -259,7 +259,9 @@ export default class Chat extends React.Component {
           renderMessageImage={this.renderMessageImage}
           renderActions={this.renderCustomActions}
           onSend={(messages) => this.onSend(messages)}
-          user={this.state.user}
+          user={{
+            _id: this.state.uid,
+          }}
         />
         {/* Android keyboard fix */}
         {Platform.OS === "android" ? (
