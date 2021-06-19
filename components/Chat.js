@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import MapView from "react-native-maps";
 import CustomActions from "./CustomActions";
+import ImageModal from "react-native-image-modal";
 
 const firebase = require("firebase");
 require("firebase/firestore");
@@ -116,16 +117,17 @@ export default class Chat extends React.Component {
   }
 
   // Adds messages to cloud storage
-  addMessage() {
+  addMessage = () => {
     const message = this.state.messages[0];
-    console.log(message);
     this.referenceChatMessages.add({
       _id: message._id,
+      text: message.text || "",
       createdAt: message.createdAt,
-      text: message.text || null,
       user: message.user,
+      image: message.image || null,
+      location: message.location || null,
     });
-  }
+  };
 
   //when something changes in the messages
   onCollectionUpdate = (querySnapshot) => {
@@ -133,19 +135,17 @@ export default class Chat extends React.Component {
     // go through each document
     querySnapshot.forEach((doc) => {
       // get the QueryDocumentSnapshot's data
-      let data = doc.data();
+      const data = doc.data();
       messages.push({
         _id: data._id,
-        text: data.text || null,
+        text: data.text || "",
         createdAt: data.createdAt.toDate(),
-        user: {
-          _id: data.user._id,
-          name: data.user.name,
-          avatar: data.user.avatar,
-        },
+        user: data.user,
+        image: data.image || null,
+        location: data.location || null,
       });
-      console.log(data.text);
     });
+
     this.setState({
       messages,
     });
@@ -217,9 +217,7 @@ export default class Chat extends React.Component {
   }
 
   //creates the circle button
-  renderCustomActions = (props) => {
-    return <CustomActions {...props} />;
-  };
+  renderCustomActions = (props) => <CustomActions {...props} />;
 
   //creates a map should the cst have a location on
   renderCustomView(props) {
@@ -227,15 +225,10 @@ export default class Chat extends React.Component {
     if (currentMessage.location) {
       return (
         <MapView
-          style={{
-            width: 150,
-            height: 100,
-            borderRadius: 13,
-            margin: 3,
-          }}
+          style={{ width: 150, height: 100, borderRadius: 13, margin: 3 }}
           region={{
-            latitude: Number(currentMessage.location.latitude),
-            longitude: Number(currentMessage.location.longitude),
+            latitude: currentMessage.location.latitude,
+            longitude: currentMessage.location.longitude,
             latitudeDelta: 0.0922,
             longitudeDelta: 0.0421,
           }}
@@ -263,6 +256,7 @@ export default class Chat extends React.Component {
           renderInputToolbar={this.renderInputToolbar.bind(this)}
           messages={this.state.messages}
           renderCustomView={this.renderCustomView}
+          renderMessageImage={this.renderMessageImage}
           renderActions={this.renderCustomActions}
           onSend={(messages) => this.onSend(messages)}
           user={this.state.user}

@@ -1,8 +1,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
-import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
+import * as MediaLibrary from 'expo-media-library';
+import { Camera } from 'expo-camera';
 import * as Location from "expo-location";
 
 //Firebase
@@ -40,7 +41,7 @@ export default class CustomActions extends React.Component {
 
   //Allows access to photo library
   pickImage = async () => {
-    const { status } = await Permissions.askAsync(Permissions.MEDIA_LIBRARY); 
+    const { status } = await MediaLibrary.requestPermissionsAsync(); 
     if (status === "granted") {
       let result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: 'Images',
@@ -55,11 +56,7 @@ export default class CustomActions extends React.Component {
   //access to camera 
   takePhoto = async () => {
     //camera and media library
-    const { status } = await Permissions.askAsync(
-      Permissions.CAMERA,
-      //camera_roll is deprecated
-      Permissions.MEDIA_LIBRARY 
-    );
+    const { status } = await Camera.requestPermissionsAsync();;
     try {
       if (status === "granted") {
         // Launches camera and allows user to take a picture
@@ -76,9 +73,10 @@ export default class CustomActions extends React.Component {
     }
   };
 
-  // Upload image to Firebaes
   uploadImage = async (uri) => {
+    // Convert image to blob format
     const blob = await new Promise((resolve, reject) => {
+      // Creates new XMLHttp request
       const xhr = new XMLHttpRequest();
       xhr.onload = function () {
         resolve(xhr.response);
@@ -87,16 +85,18 @@ export default class CustomActions extends React.Component {
         console.log(error);
         reject(new TypeError('Network request failed'));
       };
+      // Opens connection to receive image data and reponds as 'blob' type
       xhr.responseType = 'blob';
       xhr.open('GET', uri, true);
       xhr.send(null);
     });
     try {
+      // Creates unique file names for storage
       const imageNameBefore = uri.split("/");
       const imageName = imageNameBefore[imageNameBefore.length - 1];
-      const ref = firebase.storage().ref().child("kumi_gernhardt");
+      const ref = firebase.storage().ref().child(`images/${imageName}`);
       const snapshot = await ref.put(blob);
-      blob.close(); 
+      blob.close(); // Close connection
       const imageDownload = await snapshot.ref.getDownloadURL();
       return imageDownload;
     } catch (e) {
@@ -107,20 +107,27 @@ export default class CustomActions extends React.Component {
 
   //Gets user location
   getLocation = async () => {
-    const { status } = await Permissions.askAsync(Permissions.LOCATION_FOREGROUND);
-    if (status === 'granted') {
-      let result = await Location.getCurrentPositionAsync({});
-
-      if (result) {
-        this.props.onSend({
-          location: {
-            latitude: result.coords.latitude,
-            longitude: result.coords.longitude
-          }
-        })
+    try {
+      const { status } = await Location.requestForegroundPermissionsAsync();
+      if (status === "granted") {
+        const result = await Location.getCurrentPositionAsync(
+          {}
+        ).catch((error) => console.log(error));
+        const longitude = JSON.stringify(result.coords.longitude);
+        const altitude = JSON.stringify(result.coords.latitude);
+        if (result) {
+          this.props.onSend({
+            location: {
+              longitude: result.coords.longitude,
+              latitude: result.coords.latitude,
+            },
+          });
+        }
       }
+    } catch (error) {
+      console.log(error.message);
     }
-  }
+  };
 
   render() {
     return (
