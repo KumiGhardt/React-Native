@@ -10,10 +10,10 @@ The app is optimised for both iOS and Android and Expo was used to develop the a
 
 
 ## Libraries
-React Native
-Expo
-Google Firestore
-Gifted Chat library
+* React Native
+* Expo
+* Google Firestore
+* Gifted Chat library
 
 
 ## Get Started
@@ -45,10 +45,10 @@ expo start
 ## Features
 A page where users can enter their name and choose a background color for the chat screen
 before joining the chat.
-● A page displaying the conversation, as well as an input field and submit button.
-● The chat must provide users with two additional communication features: sending images
+* A page displaying the conversation, as well as an input field and submit button.
+* The chat must provide users with two additional communication features: sending images
 and location data.
-● Data gets stored online and offline.
+* Data gets stored online and offline.
 
 ## Technologies
 React Native
