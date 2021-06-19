@@ -7,7 +7,40 @@ provide users with a chat interface and options to share images and their
 location.
 
 The app is optimised for both iOS and Android and Expo was used to develop the app and Google Firestore to store the chat messages.
+
+
+## Libraries
+React Native
+Expo
+Google Firestore
+Gifted Chat library
+
+
+## GET STARTED
+You will need:
 ```
+- node.js
+- Expo Command Line Interface
+npm install expo-cli --global
+- Expo account — create a new account and login at Expo.io
+- To run the app on your mobile device: the Expo mobile app from your device's app store
+- To run the app on your machine via a simulator/emulator:
+        Android Studio
+        iOS Simulator (MacOS only)
+```
+
+## SET UP
+Install dependencies
+```
+npm install
+```
+
+## Run the app
+
+```
+expo start
+```
+
 
 ## Features
 A page where users can enter their name and choose a background color for the chat screen
@@ -17,18 +50,10 @@ before joining the chat.
 and location data.
 ● Data gets stored online and offline.
 
-## Technical requirements of the project:
+## Technologies
+React Native
+Expo
+Google Firestore Database
+Android Studio
+Gifted Chat UI Library
 
-● The app must be written in React Native
-● The app must be developed using Expo.
-● The app must be styled according to the given screen design.
-● Chat conversations must be stored in Google Firestore Database.
-● The app must authenticate users anonymously via Google Firebase authentication.
-● Chat conversations must be stored locally.
-● The app must let users pick and send images from the phone’s image library.
-● The app must let users take pictures with the device’s camera app, and send them.
-● The app must store images in Firebase Cloud Storage.
-● The app must be able to read the user’s location data.
-● Location data must be sent via the chat in a map view.
-● The chat interface and functionality must be created using the Gifted Chat library.
-● The app’s codebase must contain comments.

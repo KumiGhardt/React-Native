@@ -237,12 +237,14 @@ export default class Chat extends React.Component {
     }
     return null;
   }
-
+  
   render() {
     //access the user’s name
     let userName = this.props.route.params.userName;
     //access the background colour selected
     let backgroundColor = this.props.route.params.backgroundColor;
+
+    const { messages, user } = this.state;
 
     return (
       <View
