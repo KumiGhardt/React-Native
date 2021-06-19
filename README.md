@@ -51,9 +51,9 @@ and location data.
 * Data gets stored online and offline.
 
 ## Technologies
-React Native
-Expo
-Google Firestore Database
-Android Studio
-Gifted Chat UI Library
+- React Native
+- Expo
+- Google Firestore Database
+- Android Studio
+- Gifted Chat UI Library
 
