@@ -33,12 +33,6 @@ export default class Chat extends React.Component {
     super(props);
     this.state = {
       messages: [],
-      _id: 0,
-      user: {
-        _id: "",
-        name: "",
-        avatar: "",
-      },
       isConnected: false,
       image: null,
       location: null,
@@ -237,7 +231,7 @@ export default class Chat extends React.Component {
     }
     return null;
   }
-  
+
   render() {
     //access the user’s name
     let userName = this.props.route.params.userName;
@@ -261,7 +255,9 @@ export default class Chat extends React.Component {
           renderMessageImage={this.renderMessageImage}
           renderActions={this.renderCustomActions}
           onSend={(messages) => this.onSend(messages)}
-          user={this.state.user}
+          user={{
+            _id: "",
+          }}
         />
         {/* Android keyboard fix */}
         {Platform.OS === "android" ? (
