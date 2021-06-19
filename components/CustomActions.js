@@ -2,14 +2,14 @@ import React from "react";
 import PropTypes from "prop-types";
 import { Text, View, TouchableOpacity, StyleSheet } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import * as MediaLibrary from 'expo-media-library';
-import { Camera } from 'expo-camera';
+import * as MediaLibrary from "expo-media-library";
+import { Camera } from "expo-camera";
 import * as Location from "expo-location";
 
 //Firebase
-const firebase = require('firebase');
-require('firebase/firestore');
-require('firebase/auth');
+const firebase = require("firebase");
+require("firebase/firestore");
+require("firebase/auth");
 
 export default class CustomActions extends React.Component {
   constructor(props) {
@@ -18,7 +18,12 @@ export default class CustomActions extends React.Component {
 
   onActionPress = () => {
     //  ActionSheet
-    const options = ['Choose From Library', 'Take Picture', 'Send Location', 'Cancel'];
+    const options = [
+      "Choose From Library",
+      "Take Picture",
+      "Send Location",
+      "Cancel",
+    ];
     const cancelButtonIndex = options.length - 1;
     this.context.actionSheet().showActionSheetWithOptions(
       {
@@ -41,22 +46,22 @@ export default class CustomActions extends React.Component {
 
   //Allows access to photo library
   pickImage = async () => {
-    const { status } = await MediaLibrary.requestPermissionsAsync(); 
+    const { status } = await MediaLibrary.requestPermissionsAsync();
     if (status === "granted") {
       let result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: 'Images',
+        mediaTypes: "Images",
       }).catch((error) => console.error(error));
       if (!result.cancelled) {
         const imageUrl = await this.uploadImage(result.uri);
-        this.props.onSend({ image: imageUrl, text: '' });
+        this.props.onSend({ image: imageUrl, text: "" });
       }
     }
   };
 
-  //access to camera 
+  //access to camera
   takePhoto = async () => {
     //camera and media library
-    const { status } = await Camera.requestPermissionsAsync();;
+    const { status } = await Camera.requestPermissionsAsync();
     try {
       if (status === "granted") {
         // Launches camera and allows user to take a picture
@@ -65,7 +70,7 @@ export default class CustomActions extends React.Component {
         }).catch((error) => console.error(error));
         if (!result.cancelled) {
           const imageUrl = await this.uploadImage(result.uri);
-          this.props.onSend({ image: imageUrl, text: '' });
+          this.props.onSend({ image: imageUrl, text: "" });
         }
       }
     } catch (error) {
@@ -83,11 +88,11 @@ export default class CustomActions extends React.Component {
       };
       xhr.onerror = function (error) {
         console.log(error);
-        reject(new TypeError('Network request failed'));
+        reject(new TypeError("Network request failed"));
       };
       // Opens connection to receive image data and reponds as 'blob' type
-      xhr.responseType = 'blob';
-      xhr.open('GET', uri, true);
+      xhr.responseType = "blob";
+      xhr.open("GET", uri, true);
       xhr.send(null);
     });
     try {
@@ -102,19 +107,16 @@ export default class CustomActions extends React.Component {
     } catch (e) {
       console.log(e);
     }
-  }
-
+  };
 
   //Gets user location
   getLocation = async () => {
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
       if (status === "granted") {
-        const result = await Location.getCurrentPositionAsync(
-          {}
-        ).catch((error) => console.log(error));
-        const longitude = JSON.stringify(result.coords.longitude);
-        const altitude = JSON.stringify(result.coords.latitude);
+        const result = await Location.getCurrentPositionAsync({}).catch(
+          (error) => console.log(error)
+        );
         if (result) {
           this.props.onSend({
             location: {
@@ -133,9 +135,10 @@ export default class CustomActions extends React.Component {
     return (
       <TouchableOpacity
         style={[styles.container]}
-        accessibilityLabel='Action button'
-        accessibilityHint='Select an image to send, take a picture, or send your current location'
-        onPress={this.onActionPress}>
+        accessibilityLabel="Action button"
+        accessibilityHint="Select an image to send, take a picture, or send your current location"
+        onPress={this.onActionPress}
+      >
         <View style={[styles.wrapper, this.props.wrapperStyle]}>
           <Text style={[styles.iconText, this.props.iconTextStyle]}>+</Text>
         </View>
@@ -153,16 +156,16 @@ const styles = StyleSheet.create({
   },
   wrapper: {
     borderRadius: 13,
-    borderColor: '#b2b2b2',
+    borderColor: "#b2b2b2",
     borderWidth: 2,
     flex: 1,
   },
   iconText: {
-    color: '#b2b2b2',
-    fontWeight: 'bold',
+    color: "#b2b2b2",
+    fontWeight: "bold",
     fontSize: 16,
-    backgroundColor: 'transparent',
-    textAlign: 'center',
+    backgroundColor: "transparent",
+    textAlign: "center",
   },
 });
 
