@@ -16,7 +16,7 @@ Google Firestore
 Gifted Chat library
 
 
-## GET STARTED
+## Get Started
 You will need:
 ```
 - node.js
@@ -29,13 +29,13 @@ npm install expo-cli --global
         iOS Simulator (MacOS only)
 ```
 
-## SET UP
+## Set Up
 Install dependencies
 ```
 npm install
 ```
 
-## Run the app
+## Run the App
 
 ```
 expo start
