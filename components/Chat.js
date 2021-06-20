@@ -33,6 +33,8 @@ export default class Chat extends React.Component {
     super(props);
     this.state = {
       messages: [],
+      user: {},
+      uid: 0,
       isConnected: false,
       image: null,
       location: null,
@@ -73,11 +75,7 @@ export default class Chat extends React.Component {
             }
             this.setState({
               messages: [],
-              user: {
-                _id: "",
-                name: "",
-                avatar: null,
-              },
+              uid: user.uid,
               isConnected: true,
             });
             // listen for collection changes for current user
@@ -237,8 +235,7 @@ export default class Chat extends React.Component {
     let userName = this.props.route.params.userName;
     //access the background colour selected
     let backgroundColor = this.props.route.params.backgroundColor;
-
-    const { messages, user } = this.state;
+    const { messages, uid } = this.state;
 
     return (
       <View
@@ -256,7 +253,7 @@ export default class Chat extends React.Component {
           renderActions={this.renderCustomActions}
           onSend={(messages) => this.onSend(messages)}
           user={{
-            _id: "",
+            _id: uid,
           }}
         />
         {/* Android keyboard fix */}
